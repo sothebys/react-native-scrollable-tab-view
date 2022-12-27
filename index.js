@@ -13,17 +13,11 @@ const {
   InteractionManager,
 } = ReactNative;
 
-const ViewPagerAndroid = require('@react-native-community/viewpager');
 const TimerMixin = require('react-timer-mixin');
-const ViewPager = require('@react-native-community/viewpager');
 
 const SceneComponent = require('./SceneComponent');
 const DefaultTabBar = require('./DefaultTabBar');
 const ScrollableTabBar = require('./ScrollableTabBar');
-
-const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
-  Animated.createAnimatedComponent(ViewPager) :
-  undefined;
 
 const ScrollableTabView = createReactClass({
   mixins: [TimerMixin, ],
@@ -225,9 +219,8 @@ const ScrollableTabView = createReactClass({
   },
 
   renderScrollableContent() {
-    if (Platform.OS === 'ios') {
-      const scenes = this._composeScenes();
-      return <Animated.ScrollView
+    const scenes = this._composeScenes();
+    return <Animated.ScrollView
         horizontal
         pagingEnabled
         automaticallyAdjustContentInsets={false}
@@ -250,33 +243,6 @@ const ScrollableTabView = createReactClass({
       >
           {scenes}
       </Animated.ScrollView>;
-    } else {
-      const scenes = this._composeScenes();
-      return <AnimatedViewPagerAndroid
-        key={this._children().length}
-        style={styles.scrollableContentAndroid}
-        initialPage={this.props.initialPage}
-        onPageSelected={this._updateSelectedPage}
-        keyboardDismissMode="on-drag"
-        scrollEnabled={!this.props.locked}
-        onPageScroll={Animated.event(
-          [{
-            nativeEvent: {
-              position: this.state.positionAndroid,
-              offset: this.state.offsetAndroid,
-            },
-          }, ],
-          {
-            useNativeDriver: true,
-            listener: this._onScroll,
-          },
-        )}
-        ref={(scrollView) => { this.scrollView = scrollView; }}
-        {...this.props.contentProps}
-      >
-        {scenes}
-      </AnimatedViewPagerAndroid>;
-    }
   },
 
   _composeScenes() {
